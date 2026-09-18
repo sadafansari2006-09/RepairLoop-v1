@@ -1,0 +1,100 @@
+/* ===== RepairLoop — Global tokens & reset ===== */
+
+:root {
+  --cream: #F2E8D8;
+  --linen: #FBF6EC;
+  --bark: #2A1F16;
+  --bark-soft: #5A4736;
+  --clay: #A85B3C;
+  --clay-dark: #8B4830;
+
+  --forest: #3F5D48;
+  --forest-dark: #2E4636;
+  --sage: #7FA070;
+  --sage-dark: #5C7A4E;
+
+  --sky: #6E93AC;
+  --denim: #3D6180;
+
+  --border: #D9C8AC;
+  --border-strong: #C4AF8B;
+  --white: #FFFFFF;
+
+  --font-serif: "Fraunces", "Iowan Old Style", serif;
+  --font-sans: "Work Sans", -apple-system, "Segoe UI", sans-serif;
+
+  --radius-sm: 3px;
+  --radius-md: 6px;
+  --radius-lg: 10px;
+
+  --shadow-soft: 0 1px 2px rgba(59, 42, 32, 0.06);
+  --container: 1180px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--cream);
+  color: var(--bark);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-serif);
+  color: var(--bark);
+  line-height: 1.15;
+  margin: 0 0 0.5em 0;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+h1 { font-size: clamp(2.2rem, 4vw, 3.4rem); font-weight: 500; }
+h2 { font-size: clamp(1.6rem, 2.6vw, 2.25rem); }
+h3 { font-size: 1.4rem; }
+h4 { font-size: 1.1rem; }
+
+p {
+  margin: 0 0 1em 0;
+  max-width: 62ch;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+ul, ol {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+button, input, textarea, select {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+:focus-visible {
+  outline: 2px solid var(--clay);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
