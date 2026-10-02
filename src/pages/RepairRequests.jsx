@@ -1,39 +1,199 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { useApp } from "../context/AppContext";
 import StatusBadge from "../components/StatusBadge";
 import Photo from "../components/Photo";
+import { supabase } from "../lib/supabase";
 
 export default function RepairRequests() {
-  const { requests } = useApp();
+  const [requests, setRequests] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    async function loadRequests() {
+      try {
+        setLoading(true);
+        setError("");
+
+        // Get logged-in user
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+
+        if (!user) {
+          setRequests([]);
+          return;
+        }
+
+        // Get this user's repair requests
+        const { data: requestData, error: requestError } =
+          await supabase
+            .from("repair_requests")
+            .select("*")
+            .eq("owner_id", user.id)
+            .order("created_at", { ascending: false });
+
+        if (requestError) {
+          throw requestError;
+        }
+
+        if (!requestData || requestData.length === 0) {
+          setRequests([]);
+          return;
+        }
+
+        // Get the items connected to these requests
+        const itemIds = requestData.map(
+          (request) => request.item_id
+        );
+
+        const { data: itemData, error: itemError } =
+          await supabase
+            .from("items")
+            .select("*")
+            .in("id", itemIds);
+
+        if (itemError) {
+          throw itemError;
+        }
+
+        // Get estimates for these requests
+        const requestIds = requestData.map(
+          (request) => request.id
+        );
+
+        const { data: estimateData, error: estimateError } =
+          await supabase
+            .from("estimates")
+            .select("id, request_id")
+            .in("request_id", requestIds);
+
+        if (estimateError) {
+          throw estimateError;
+        }
+
+        // Combine requests + items + estimate counts
+        const formattedRequests = requestData.map(
+          (request) => {
+            const item = itemData?.find(
+              (item) => item.id === request.item_id
+            );
+
+            const estimateCount =
+              estimateData?.filter(
+                (estimate) =>
+                  estimate.request_id === request.id
+              ).length || 0;
+
+            return {
+              id: request.id,
+              itemName: item?.item_name || "Unknown item",
+              category: item?.category || "Other",
+              description: item?.description || "",
+              image: item?.image_url || undefined,
+              status: request.status,
+              createdAt: new Date(
+                request.created_at
+              ).toLocaleDateString("en-IN"),
+              estimateCount,
+            };
+          }
+        );
+
+        setRequests(formattedRequests);
+      } catch (err) {
+        console.error(
+          "Error loading repair requests:",
+          err
+        );
+
+        setError(
+          err.message ||
+            "Could not load repair requests."
+        );
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadRequests();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="empty-state">
+        <h3>Loading repair requests...</h3>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="empty-state">
+        <h3>Could not load repair requests</h3>
+        <p>{error}</p>
+      </div>
+    );
+  }
 
   return (
     <div>
       <div className="page-head">
         <div>
           <h1>Repair requests</h1>
-          <p>Track every estimate and repair in progress.</p>
+          <p>
+            Track every estimate and repair in progress.
+          </p>
         </div>
       </div>
 
       {requests.length === 0 ? (
         <div className="empty-state">
           <h3>No repair requests yet</h3>
-          <p>Once you report a broken item, its request will show up here.</p>
+
+          <p>
+            Once you report a broken item, its request
+            will show up here.
+          </p>
         </div>
       ) : (
         <div className="row-list">
-          {requests.map((req) => (
-            <Link key={req.id} to={`/repair-requests/${req.id}`} className="row-card">
+          {requests.map((request) => (
+            <Link
+              key={request.id}
+              to={`/repair-requests/${request.id}`}
+              className="row-card"
+            >
               <div className="row-card-main">
-                <Photo src={req.image} gradientClass={req.photoClass} alt={req.itemName} className="row-thumb" />
+                <Photo
+                  src={request.image}
+                  alt={request.itemName}
+                  className="row-thumb"
+                />
+
                 <div>
-                  <div className="row-title">{req.itemName}</div>
-                  <div className="row-sub">{req.category} · Submitted {req.createdAt}</div>
+                  <div className="row-title">
+                    {request.itemName}
+                  </div>
+
+                  <div className="row-sub">
+                    {request.category} · Submitted{" "}
+                    {request.createdAt}
+                  </div>
                 </div>
               </div>
+
               <div className="row-side">
-                <span className="row-sub">{req.estimates.length} estimate{req.estimates.length === 1 ? "" : "s"}</span>
-                <StatusBadge status={req.status} />
+                <span className="row-sub">
+                  {request.estimateCount} estimate
+                  {request.estimateCount === 1
+                    ? ""
+                    : "s"}
+                </span>
+
+                <StatusBadge
+                  status={request.status}
+                />
               </div>
             </Link>
           ))}
