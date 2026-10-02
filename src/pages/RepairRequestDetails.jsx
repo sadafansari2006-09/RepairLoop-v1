@@ -13,6 +13,7 @@ export default function RepairRequestDetails() {
   const [estimates, setEstimates] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [selectingEstimate, setSelectingEstimate] = useState(null);
 
   useEffect(() => {
     async function loadRequest() {
@@ -84,6 +85,70 @@ export default function RepairRequestDetails() {
 
     loadRequest();
   }, [id]);
+
+async function chooseRepairer(estimateId) {
+  try {
+    setSelectingEstimate(estimateId);
+    setError("");
+
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    if (!session) {
+      throw new Error("You must be logged in.");
+    }
+
+    const response = await fetch(
+      "http://localhost:5000/api/repair-jobs",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({
+          requestId: request.id,
+          estimateId,
+        }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data.message || "Failed to choose repairer."
+      );
+    }
+
+    console.log("Repairer selected:", data);
+
+    // Update the page immediately
+    setRequest((current) => ({
+      ...current,
+      status: "in_progress",
+    }));
+
+    setEstimates((currentEstimates) =>
+      currentEstimates.map((estimate) => ({
+        ...estimate,
+        status:
+          estimate.id === estimateId
+            ? "accepted"
+            : "rejected",
+      }))
+    );
+  } catch (err) {
+    console.error("Error choosing repairer:", err);
+
+    setError(
+      err.message || "Could not choose repairer."
+    );
+  } finally {
+    setSelectingEstimate(null);
+  }
+}
 
   if (loading) {
     return (
@@ -230,6 +295,23 @@ export default function RepairRequestDetails() {
                 >
                   {estimate.status}
                 </span>
+                {estimate.status === "pending" &&
+  request.status === "open" && (
+    <div style={{ marginTop: 16 }}>
+      <Button
+        variant="primary"
+        size="sm"
+        onClick={() =>
+          chooseRepairer(estimate.id)
+        }
+        disabled={selectingEstimate === estimate.id}
+      >
+        {selectingEstimate === estimate.id
+          ? "Choosing..."
+          : "Choose this repairer"}
+      </Button>
+    </div>
+  )}
               </div>
             </div>
           ))}
