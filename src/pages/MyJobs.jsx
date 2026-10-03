@@ -24,7 +24,7 @@ export default function MyJobs() {
         }
 
         const response = await fetch(
-          "http://localhost:5000/api/repairer/jobs",
+          "https://repairloop-v1.onrender.com/api/repairer/jobs",
           {
             headers: {
               Authorization: `Bearer ${session.access_token}`,

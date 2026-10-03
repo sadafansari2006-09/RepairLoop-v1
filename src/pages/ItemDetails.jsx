@@ -91,7 +91,7 @@ export default function ItemDetails() {
       }
 
       const response = await fetch(
-        "http://localhost:5000/api/repair-requests",
+        "https://repairloop-v1.onrender.com/api/repair-requests",
         {
           method: "POST",
           headers: {

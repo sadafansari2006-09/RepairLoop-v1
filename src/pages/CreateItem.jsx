@@ -112,7 +112,7 @@ export default function CreateItem() {
 
       // 4. Create item in backend
       const response = await fetch(
-        "http://localhost:5000/api/items",
+        "https://repairloop-v1.onrender.com/api/items",
         {
           method: "POST",
           headers: {
@@ -148,7 +148,7 @@ export default function CreateItem() {
 
       // 5. Create repair request
       const requestResponse = await fetch(
-        "http://localhost:5000/api/repair-requests",
+        "https://repairloop-v1.onrender.com/api/repair-requests",
         {
           method: "POST",
           headers: {

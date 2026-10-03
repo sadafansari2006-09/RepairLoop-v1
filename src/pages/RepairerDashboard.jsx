@@ -95,7 +95,7 @@ export default function RepairerDashboard() {
 
         // Get repairer's assigned jobs
         const jobsResponse = await fetch(
-          "http://localhost:5000/api/repairer/jobs",
+          "https://repairloop-v1.onrender.com/api/repairer/jobs",
           {
             headers: {
               Authorization: `Bearer ${session.access_token}`,

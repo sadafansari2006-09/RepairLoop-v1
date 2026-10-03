@@ -32,7 +32,7 @@ export default function JobDetails() {
         }
 
         const response = await fetch(
-          `http://localhost:5000/api/repairer/jobs/${id}`,
+          `https://repairloop-v1.onrender.com/api/repairer/jobs/${id}`,
           {
             headers: {
               Authorization: `Bearer ${session.access_token}`,
@@ -80,7 +80,7 @@ export default function JobDetails() {
       }
 
       const response = await fetch(
-        `http://localhost:5000/api/repairer/jobs/${id}/status`,
+        `https://repairloop-v1.onrender.com/api/repairer/jobs/${id}/status`,
         {
           method: "PATCH",
           headers: {
