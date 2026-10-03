@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useApp } from "../context/AppContext";
 import Button from "../components/Button";
@@ -22,23 +22,44 @@ export default function CreateItem() {
   const [name, setName] = useState("");
   const [category, setCategory] = useState(categories[0]);
   const [description, setDescription] = useState("");
-  const [photoDataUrl, setPhotoDataUrl] = useState(null);
+
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [photoPreview, setPhotoPreview] = useState(null);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // Clean up preview URL when component unmounts
+  useEffect(() => {
+    return () => {
+      if (photoPreview) {
+        URL.revokeObjectURL(photoPreview);
+      }
+    };
+  }, [photoPreview]);
+
   function handleFileChange(e) {
-    const file = e.target.files[0];
+    const file = e.target.files?.[0];
 
     if (!file) return;
 
-    const reader = new FileReader();
+    // Make sure the selected file is an image
+    if (!file.type.startsWith("image/")) {
+      setError("Please select an image file.");
+      return;
+    }
 
-    reader.onload = () => {
-      setPhotoDataUrl(reader.result);
-    };
+    // Keep upload size reasonable
+    if (file.size > 50 * 1024 * 1024) {
+      setError("Image must be smaller than 50 MB.");
+      return;
+    }
 
-    reader.readAsDataURL(file);
+    setError("");
+    setSelectedFile(file);
+
+    const previewUrl = URL.createObjectURL(file);
+    setPhotoPreview(previewUrl);
   }
 
   async function handleSubmit(e) {
@@ -48,28 +69,64 @@ export default function CreateItem() {
     setError("");
 
     try {
-      // Get the current logged-in user's session
+      // 1. Get logged-in user session
       const {
         data: { session },
       } = await supabase.auth.getSession();
 
       if (!session) {
-        throw new Error("You must be logged in to report an item.");
+        throw new Error(
+          "You must be logged in to report an item."
+        );
       }
 
-      // Send the item + authentication token to the backend
-      const response = await fetch("http://localhost:5000/api/items", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${session.access_token}`,
-        },
-        body: JSON.stringify({
-          itemName: name,
-          category: category,
-          description: description,
-        }),
-      });
+      // 2. Upload image to Supabase Storage
+      let imageUrl = null;
+
+      if (selectedFile) {
+        const fileExtension =
+          selectedFile.name.split(".").pop()?.toLowerCase() || "jpg";
+
+        const fileName = `${session.user.id}/${crypto.randomUUID()}.${fileExtension}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from("repair-images")
+          .upload(fileName, selectedFile, {
+            contentType: selectedFile.type,
+            upsert: false,
+          });
+
+        if (uploadError) {
+          throw new Error(
+            `Image upload failed: ${uploadError.message}`
+          );
+        }
+
+        // 3. Get permanent public URL
+        const { data: publicUrlData } = supabase.storage
+          .from("repair-images")
+          .getPublicUrl(fileName);
+
+        imageUrl = publicUrlData.publicUrl;
+      }
+
+      // 4. Create item in backend
+      const response = await fetch(
+        "http://localhost:5000/api/items",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({
+            itemName: name,
+            category,
+            description,
+            imageUrl,
+          }),
+        }
+      );
 
       const data = await response.json();
 
@@ -81,14 +138,15 @@ export default function CreateItem() {
 
       console.log("Item created:", data);
 
-      // Get the real item created in Supabase
       const createdItem = data.item;
 
       if (!createdItem) {
-        throw new Error("Item was created but no item data was returned.");
+        throw new Error(
+          "Item was created but no item data was returned."
+        );
       }
 
-      // Create a real repair request
+      // 5. Create repair request
       const requestResponse = await fetch(
         "http://localhost:5000/api/repair-requests",
         {
@@ -107,25 +165,29 @@ export default function CreateItem() {
 
       if (!requestResponse.ok) {
         throw new Error(
-          requestData.message || "Failed to create repair request."
+          requestData.message ||
+            "Failed to create repair request."
         );
       }
 
-      console.log("Repair request created:", requestData);
+      console.log(
+        "Repair request created:",
+        requestData
+      );
 
-      // Keep the existing frontend state working temporarily
+      // 6. Keep existing frontend context in sync temporarily
       addItem({
         name,
         category,
         description,
-        image: photoDataUrl || undefined,
+        image: imageUrl || undefined,
       });
 
       createRepairRequest({
         itemId: createdItem.id,
       });
 
-      // Go to My Items after successful submission
+      // 7. Go to My Items
       navigate("/my-items");
     } catch (err) {
       console.error("Submit error:", err);
@@ -146,26 +208,36 @@ export default function CreateItem() {
           <h1>Report a broken item</h1>
 
           <p>
-            Tell us what's wrong and repairers nearby will send estimates.
+            Tell us what's wrong and repairers nearby
+            will send estimates.
           </p>
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="card">
+      <form
+        onSubmit={handleSubmit}
+        className="card"
+      >
+        {/* Item name */}
         <div className="form-group">
-          <label className="form-label">Item name</label>
+          <label className="form-label">
+            Item name
+          </label>
 
           <input
             className="form-input"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="e.g. Dell Inkspire Laptop"
+            placeholder="e.g. Dell Inspiron Laptop"
             required
           />
         </div>
 
+        {/* Category */}
         <div className="form-group">
-          <label className="form-label">Category</label>
+          <label className="form-label">
+            Category
+          </label>
 
           <select
             className="form-select"
@@ -180,26 +252,36 @@ export default function CreateItem() {
           </select>
         </div>
 
+        {/* Description */}
         <div className="form-group">
-          <label className="form-label">Describe the problem</label>
+          <label className="form-label">
+            Describe the problem
+          </label>
 
           <textarea
             className="form-textarea"
             value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            onChange={(e) =>
+              setDescription(e.target.value)
+            }
             placeholder="What's broken, when it started, and anything a repairer should know."
             required
           />
         </div>
 
+        {/* Photos */}
         <div className="form-group">
-          <label className="form-label">Photos</label>
+          <label className="form-label">
+            Photos
+          </label>
 
           <div
             className="upload-box"
-            onClick={() => fileInputRef.current.click()}
+            onClick={() =>
+              fileInputRef.current?.click()
+            }
           >
-            {photoDataUrl
+            {photoPreview
               ? "Photo selected — click to change"
               : "Click to upload a photo of the damage"}
           </div>
@@ -212,29 +294,43 @@ export default function CreateItem() {
             style={{ display: "none" }}
           />
 
-          {photoDataUrl && (
+          {photoPreview && (
             <div className="upload-thumbs">
               <img
-                src={photoDataUrl}
-                alt="Selected preview"
+                src={photoPreview}
+                alt="Selected repair item"
                 className="upload-thumb-img"
               />
             </div>
           )}
 
           <div className="form-hint">
-            Clear photos help repairers give more accurate estimates.
+            Clear photos help repairers give more
+            accurate estimates.
           </div>
         </div>
 
+        {/* Error */}
         {error && (
-          <p style={{ color: "#b4533c", marginBottom: "16px" }}>
+          <p
+            style={{
+              color: "#b4533c",
+              marginBottom: "16px",
+            }}
+          >
             {error}
           </p>
         )}
 
-        <Button type="submit" variant="primary" disabled={loading}>
-          {loading ? "Submitting..." : "Submit repair request"}
+        {/* Submit */}
+        <Button
+          type="submit"
+          variant="primary"
+          disabled={loading}
+        >
+          {loading
+            ? "Submitting..."
+            : "Submit repair request"}
         </Button>
       </form>
     </div>

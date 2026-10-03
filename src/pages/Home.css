@@ -1,0 +1,591 @@
+/* =========================================================
+   RepairLoop Home — design tokens
+   Spacing scale: 8 / 16 / 24 / 32 / 48 / 64 / 96
+   One card radius, one button radius, one shadow style.
+   ========================================================= */
+.rl-home {
+  --ink: #2b2018;
+  --muted: #5e4f44;
+  --accent: #a4472b;
+  --accent-dark: #843519;
+  --cream: #ecdfc6;
+  --paper: #f8f1e4;
+  --card: #fffaf2;
+  --line: #e4d6bf;
+  --radius: 20px;
+  --shadow: 0 8px 24px rgba(60, 38, 18, 0.08);
+  --shadow-lift: 0 16px 36px rgba(60, 38, 18, 0.15);
+  --section: 72px;
+  --gap: 28px;
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 1.0625rem; /* 17px */
+  line-height: 1.65;
+}
+
+.rl-home h1,
+.rl-home h2,
+.rl-home h3,
+.rl-home p {
+  margin: 0;
+}
+
+.rl-home h1,
+.rl-home h2,
+.rl-home h3 {
+  color: var(--ink);
+}
+
+.rl-wrap {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.rl-section {
+  padding: var(--section) 0;
+}
+
+.rl-tint {
+  background: var(--cream);
+}
+
+.rl-section,
+.rl-intro,
+.rl-about {
+  border-top: 1px solid var(--line);
+}
+
+/* ---------- Type ---------- */
+.rl-eyebrow {
+  display: block;
+  color: var(--accent);
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 12px;
+}
+
+.rl-h2 {
+  font-size: clamp(2rem, 3.4vw, 2.75rem);
+  line-height: 1.15;
+}
+
+.rl-lead {
+  color: var(--muted);
+  max-width: 58ch;
+}
+
+.rl-center {
+  text-align: center;
+}
+
+.rl-center .rl-lead {
+  margin: 16px auto 0;
+}
+
+.rl-section-head {
+  margin-bottom: 48px;
+}
+
+.rl-section-head::after {
+  content: "";
+  display: block;
+  width: 56px;
+  height: 3px;
+  margin: 24px auto 0;
+  border-radius: 3px;
+  background: var(--accent);
+}
+
+/* ---------- Buttons ---------- */
+.rl-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 52px;
+  padding: 0 32px;
+  border-radius: 999px;
+  border: 1.5px solid transparent;
+  font-weight: 600;
+  font-size: 1rem;
+  text-decoration: none;
+  transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+
+.rl-btn:hover {
+  transform: translateY(-2px);
+}
+
+.rl-btn-primary {
+  background: var(--accent);
+  color: #fff;
+}
+
+.rl-btn-primary:hover {
+  background: var(--accent-dark);
+  color: #fff;
+}
+
+.rl-btn-line {
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.75);
+}
+
+.rl-btn-line:hover {
+  background: #fff;
+  color: var(--ink);
+}
+
+.rl-btn-light {
+  background: #fff;
+  color: var(--ink);
+}
+
+.rl-home a:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* ---------- Hero (full-bleed image) ---------- */
+.rl-hero {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 600px;
+  color: #fff;
+  overflow: hidden;
+}
+
+.rl-hero > img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.rl-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(24, 15, 8, 0.88) 0%,
+    rgba(24, 15, 8, 0.7) 50%,
+    rgba(24, 15, 8, 0.25) 100%
+  );
+}
+
+.rl-hero-inner {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  padding-top: 80px;
+  padding-bottom: 80px;
+}
+
+.rl-hero-tag {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: #f1d3b8;
+}
+
+.rl-home .rl-hero h1 {
+  color: #fff;
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.35);
+  font-size: clamp(2.75rem, 6vw, 4.5rem);
+  line-height: 1.05;
+  max-width: 14ch;
+}
+
+.rl-hero p.rl-hero-text {
+  margin-top: 24px;
+  max-width: 46ch;
+  font-size: 1.15rem;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.rl-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 40px;
+}
+
+/* ---------- Intro strip ---------- */
+.rl-intro {
+  padding: 64px 0;
+}
+
+.rl-intro .rl-h2 {
+  max-width: 22ch;
+  margin: 0 auto;
+}
+
+/* ---------- Cards ---------- */
+.rl-cat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--gap);
+}
+
+.rl-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+  color: inherit;
+  text-decoration: none;
+  box-shadow: var(--shadow);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.rl-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-lift);
+  color: inherit;
+}
+
+.rl-card-img {
+  overflow: hidden;
+}
+
+.rl-card-img img {
+  display: block;
+  width: 100%;
+  height: 280px;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.rl-card:hover .rl-card-img img {
+  transform: scale(1.05);
+}
+
+.rl-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 24px 28px 28px;
+  flex: 1;
+}
+
+.rl-card-body h3 {
+  font-size: 1.5rem;
+  line-height: 1.2;
+}
+
+.rl-card-body p {
+  color: var(--muted);
+}
+
+.rl-more {
+  margin-top: auto;
+  padding-top: 8px;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.rl-more i {
+  display: inline-block;
+  margin-left: 4px;
+  transition: transform 0.25s ease;
+}
+
+.rl-card:hover .rl-more i {
+  transform: translate(3px, -3px);
+}
+
+/* Wide furniture card */
+.rl-wide {
+  flex-direction: row;
+  margin-top: var(--gap);
+}
+
+.rl-wide .rl-card-img {
+  flex: 1.2;
+}
+
+.rl-wide .rl-card-img img {
+  height: 100%;
+  min-height: 320px;
+}
+
+.rl-wide .rl-card-body {
+  flex: 1;
+  justify-content: center;
+  padding: 48px;
+}
+
+.rl-wide .rl-card-body h3 {
+  font-size: 2rem;
+}
+
+.rl-wide .rl-more {
+  margin-top: 16px;
+}
+
+/* ---------- Steps ---------- */
+.rl-steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--gap);
+}
+
+.rl-step {
+  padding: 32px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.rl-step-num {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin-bottom: 24px;
+  border-radius: 50%;
+  background: var(--ink);
+  color: #fff;
+  font-weight: 600;
+}
+
+.rl-step h3 {
+  font-size: 1.35rem;
+  margin-bottom: 8px;
+}
+
+.rl-step p {
+  color: var(--muted);
+}
+
+/* ---------- About (image bleeds to the right edge) ---------- */
+.rl-about {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: var(--cream);
+}
+
+.rl-about-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 24px;
+  padding: var(--section) 64px var(--section)
+    max(24px, calc((100vw - 1160px) / 2 + 24px));
+}
+
+.rl-about-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+
+.rl-about-list li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 500;
+}
+
+.rl-about-list i {
+  color: var(--accent);
+  font-size: 1.25rem;
+}
+
+.rl-about-img img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 460px;
+  object-fit: cover;
+}
+
+/* ---------- Testimonials ---------- */
+.rl-quotes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--gap);
+}
+
+.rl-quote {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 32px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.rl-quote i {
+  color: var(--accent);
+  font-size: 1.75rem;
+  line-height: 1;
+}
+
+.rl-quote-who {
+  margin-top: auto;
+  font-weight: 600;
+}
+
+.rl-quote-who span {
+  display: block;
+  font-weight: 400;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+/* ---------- Final CTA (image + text card) ---------- */
+.rl-cta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  overflow: hidden;
+  border-radius: 28px;
+  background: #2b2018;
+  box-shadow: var(--shadow-lift);
+}
+
+.rl-cta-img img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 380px;
+  object-fit: cover;
+}
+
+.rl-cta-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 56px;
+}
+
+.rl-home .rl-cta-body h2 {
+  color: #fff;
+}
+
+.rl-home .rl-cta-body p {
+  color: rgba(255, 255, 255, 0.85);
+  max-width: 40ch;
+}
+
+.rl-cta-body .rl-actions {
+  margin-top: 16px;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 991px) {
+  .rl-home {
+    --section: 56px;
+  }
+
+  .rl-cat-grid,
+  .rl-steps,
+  .rl-quotes {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .rl-wide,
+  .rl-about,
+  .rl-cta {
+    grid-template-columns: 1fr;
+    flex-direction: column;
+  }
+
+  .rl-cta-img img {
+    min-height: 260px;
+  }
+
+  .rl-cta-body {
+    padding: 40px 28px;
+  }
+
+  .rl-wide .rl-card-img img {
+    height: 280px;
+  }
+
+  .rl-wide .rl-card-body {
+    padding: 32px;
+  }
+
+  .rl-about-text {
+    padding: var(--section) 24px;
+  }
+
+  .rl-about-img img {
+    min-height: 320px;
+  }
+}
+
+@media (max-width: 640px) {
+  .rl-home {
+    --section: 48px;
+    --gap: 20px;
+  }
+
+  .rl-hero {
+    min-height: 520px;
+  }
+
+  .rl-cat-grid,
+  .rl-steps,
+  .rl-quotes {
+    grid-template-columns: 1fr;
+  }
+
+  .rl-btn {
+    width: 100%;
+  }
+
+  .rl-card-img img {
+    height: 240px;
+  }
+
+  .rl-section-head {
+    margin-bottom: 32px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rl-home * {
+    transition: none !important;
+  }
+}
+.rl-card-img {
+  position: relative;
+}
+
+.rl-card-icon {
+  position: absolute;
+  left: 20px;
+  bottom: 18px;
+
+  width: 54px;
+  height: 54px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #fffaf3;
+  color: #a65335;
+
+  border-radius: 16px;
+
+  font-size: 1.15rem;
+
+  box-shadow: 0 8px 20px rgba(48, 33, 23, 0.12);
+}

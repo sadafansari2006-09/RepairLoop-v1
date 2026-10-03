@@ -24,6 +24,7 @@ import AvailableRequests from "./pages/AvailableRequests";
 import MyJobs from "./pages/MyJobs";
 import JobDetails from "./pages/JobDetails";
 import RepairerProfile from "./pages/RepairerProfile";
+import RepairCategory from "./pages/RepairCategory";
 
 export default function App() {
   return (
@@ -61,6 +62,11 @@ export default function App() {
           <Route path="/repairer/jobs/:id" element={<JobDetails />} />
           <Route path="/repairer/profile" element={<RepairerProfile />} />
         </Route>
+
+        <Route
+  path="/repairs/:category"
+  element={<RepairCategory />}
+/>
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

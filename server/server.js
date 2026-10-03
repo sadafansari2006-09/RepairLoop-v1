@@ -65,6 +65,7 @@ app.post("/api/items", async (req, res) => {
       itemName,
       category,
       description,
+       imageUrl,
     } = req.body;
 
     // Get authentication token
@@ -99,6 +100,7 @@ app.post("/api/items", async (req, res) => {
           item_name: itemName,
           category: category,
           description: description,
+          image_url: imageUrl || null,
           status: "open",
         },
       ])
