@@ -5,9 +5,6 @@ RepairLoop allows users to submit broken-item repair requests, upload images, re
 Live Demo
 [RepairLoop](https://repairloop-frontend.onrender.com)
 
-GitHub
-[Repository](https://github.com/sadafansari2006-09/RepairLoop-v1)
-
 Features
 
 # For Item Owners
