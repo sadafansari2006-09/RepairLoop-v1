@@ -28,9 +28,7 @@ Features
 - Mark repairs as completed
 - Add repair notes
 
----
-
-Tech Stack
+# Tech Stack
 
 # Frontend
 - React
@@ -52,8 +50,6 @@ Tech Stack
 # Deployment
 - Render
 - GitHub
-
----
 
 # How It Works
 
